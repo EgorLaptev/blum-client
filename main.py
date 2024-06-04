@@ -79,7 +79,7 @@ def loop():
     # detect all particles
     for type_p in config['detect']['types']:
         mask_layer = mask(centers, hsv, type_p)
-        if f"mask:{type_p}" in layers:
+        if f"mask:{type_p}" in config['render']['layers']:
             layers[f"mask:{type_p}"] = mask_layer
 
     # collect all blums
@@ -100,7 +100,8 @@ def loop():
         for layer in layers.keys():
             cv2.imshow(layer, layers[layer])
 
-    time.sleep(config['detect']['frequency'])
+    if config['detect']['frequency'] > 0:
+        time.sleep(config['detect']['frequency'])
 
 
 while True:

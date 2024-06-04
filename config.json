@@ -1,5 +1,5 @@
 {
-  "interact": true,
+  "interact": false,
 
   "detect": {
     "hsv": {
@@ -30,7 +30,7 @@
   },
 
   "render": {
-    "layers":  [],
+    "layers":  ["screenshot", "centers", "mask:blum", "mask:bomb", "mask:ice"],
     "blum": {
       "color": [0, 255, 0],
       "radius": 5
