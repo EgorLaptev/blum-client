@@ -1,5 +1,5 @@
 {
-  "interact": false,
+  "interact": true,
 
   "detect": {
     "hsv": {
@@ -17,20 +17,21 @@
       }
     },
     "types": ["blum", "ice", "bomb"],
-    "safe_distance": 40,
+    "safe_distance": 80,
     "minimal_area": 60,
-    "frequency": 0
+    "frame_frequency": 0,
+    "click_frequency": 0
   },
 
   "window": {
     "left": 0,
-    "top": 300,
-    "width": 580,
-    "height": 650
+    "top": 270,
+    "width": 590,
+    "height": 1080
   },
 
   "render": {
-    "layers":  ["screenshot", "centers", "mask:blum", "mask:bomb", "mask:ice"],
+    "layers":  [],
     "blum": {
       "color": [0, 255, 0],
       "radius": 5

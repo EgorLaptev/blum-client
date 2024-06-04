@@ -8,6 +8,8 @@ import time
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)
 
+pyautogui.PAUSE = config['detect']['click_frequency']
+
 
 def is_far_enough(centers, new_center, min_distance=40):
     for center in centers:
@@ -37,8 +39,14 @@ def mask(centers, hsv, type_p='blum'):
 
             center = (cX, cY)
 
-            if all(is_far_enough(centers[type_b], center, config['detect']['safe_distance']) for type_b in config['detect']['types']):
+            if is_far_enough(centers['bomb'], center, config['detect']['safe_distance']):
+                if config['interact'] and type_p == 'blum':
+                    click(center)
                 centers[type_p].append(center)
+
+            if type_p == 'bomb':
+                centers['blum'] = [center for center in centers['blum'] if is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
+                centers['ice'] = [center for center in centers['ice'] if is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
 
     return mask_layer
 
@@ -46,7 +54,8 @@ def mask(centers, hsv, type_p='blum'):
 def click(center):
     screen_x = config['window']['left'] + center[0]
     screen_y = config['window']['top'] + center[1]
-    pyautogui.click(screen_x, screen_y)
+    pyautogui.click(screen_x, screen_y+30)
+    # pyautogui.moveTo(screen_x, screen_y+30, duration=0)
 
 
 def render(image, centers, type_p='blum'):
@@ -82,11 +91,6 @@ def loop():
         if f"mask:{type_p}" in config['render']['layers']:
             layers[f"mask:{type_p}"] = mask_layer
 
-    # collect all blums
-    if config['interact']:
-        for center in centers['blum']:
-            click(center)
-
     # render layers
     if len(config['render']['layers']):
         image = np.zeros((config['window']['height'], config['window']['width'], 3), np.uint8)
@@ -100,8 +104,8 @@ def loop():
         for layer in layers.keys():
             cv2.imshow(layer, layers[layer])
 
-    if config['detect']['frequency'] > 0:
-        time.sleep(config['detect']['frequency'])
+    if config['detect']['frame_frequency'] > 0:
+        time.sleep(config['detect']['frame_frequency'])
 
 
 while True:
