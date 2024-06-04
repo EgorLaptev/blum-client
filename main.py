@@ -78,7 +78,9 @@ def loop():
 
     # detect all particles
     for type_p in config['detect']['types']:
-        layers[f"mask:{type_p}"] = mask(centers, hsv, type_p)
+        mask_layer = mask(centers, hsv, type_p)
+        if f"mask:{type_p}" in layers:
+            layers[f"mask:{type_p}"] = mask_layer
 
     # collect all blums
     if config['interact']:
