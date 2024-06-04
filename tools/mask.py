@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-img = cv2.imread("defect_hsv.png")
+img = cv2.imread("objects/full_field.png")
 
 def nothing(x):
     pass

@@ -1,0 +1,47 @@
+{
+  "interact": false,
+
+  "detect": {
+    "hsv": {
+      "blum": {
+        "lower": [40, 100, 100],
+        "upper": [80, 255, 255]
+      },
+      "bomb": {
+        "lower": [0, 0, 87],
+        "upper": [179, 35, 255]
+      },
+      "ice": {
+        "lower": [88, 0, 97],
+        "upper": [122, 220, 255]
+      }
+    },
+    "types": ["blum", "ice", "bomb"],
+    "safe_distance": 40,
+    "minimal_area": 60,
+    "frequency": 0
+  },
+
+  "window": {
+    "left": 0,
+    "top": 300,
+    "width": 580,
+    "height": 650
+  },
+
+  "render": {
+    "layers":  ["screenshot", "centers", "mask:blum", "mask:bomb", "mask:ice"],
+    "blum": {
+      "color": [0, 255, 0],
+      "radius": 5
+    },
+    "bomb": {
+      "color": [0, 0, 255],
+      "radius": 5
+    },
+    "ice": {
+      "color": [255, 255, 0],
+      "radius": 5
+    }
+  }
+}
