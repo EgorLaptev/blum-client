@@ -1,8 +1,11 @@
 import cv2
 import json
 import numpy as np
-import pyautogui
 import time
+import pyautogui
+import sys
+
+# sys.tracebacklimit = 0
 
 # load app config
 with open('config.json', 'r') as config_file:
@@ -13,7 +16,7 @@ pyautogui.PAUSE = config['detect']['click_frequency']
 
 def is_far_enough(centers, new_center, min_distance=40):
     for center in centers:
-        distance = np.sqrt((center[0] - new_center[0])**2 + (center[1] - new_center[1])**2)
+        distance = np.sqrt((center[0] - new_center[0]) ** 2 + (center[1] - new_center[1]) ** 2)
         if distance < min_distance:
             return False
     return True
@@ -45,8 +48,10 @@ def mask(centers, hsv, type_p='blum'):
                 centers[type_p].append(center)
 
             if type_p == 'bomb':
-                centers['blum'] = [center for center in centers['blum'] if is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
-                centers['ice'] = [center for center in centers['ice'] if is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
+                centers['blum'] = [center for center in centers['blum'] if
+                                   is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
+                centers['ice'] = [center for center in centers['ice'] if
+                                  is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
 
     return mask_layer
 
@@ -54,7 +59,7 @@ def mask(centers, hsv, type_p='blum'):
 def click(center):
     screen_x = config['window']['left'] + center[0]
     screen_y = config['window']['top'] + center[1]
-    pyautogui.click(screen_x, screen_y+30)
+    pyautogui.click(screen_x, screen_y + 30)
     # pyautogui.moveTo(screen_x, screen_y+30, duration=0)
 
 
@@ -69,8 +74,27 @@ def render(image, centers, type_p='blum'):
         )
 
 
+def autocrop():
+    tg_windows = pyautogui.getWindowsWithTitle("TelegramDesktop")
+
+    if len(tg_windows) > 1:
+        raise Exception('[AutoCropError] close all telegram windows except blum game')
+    if len(tg_windows) == 0:
+        raise Exception('[AutoCropError] open blum game')
+
+    blum_window = tg_windows[0]
+    screenshot = pyautogui.screenshot(
+        region=(blum_window.left + 30, blum_window.top + 100, blum_window.width - 60, blum_window.height - 260))
+
+    return screenshot
+
+
 def loop():
-    screenshot = pyautogui.screenshot(region=tuple(config['window'].values()))
+    screenshot = autocrop() if config['autoCrop'] else pyautogui.screenshot(region=tuple(config['window'].values()))
+
+    if not screenshot:
+        raise Exception('screenshot not received')
+
     open_cv_image = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
     hsv = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2HSV)
 
@@ -113,6 +137,5 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
 
 cv2.destroyAllWindows()

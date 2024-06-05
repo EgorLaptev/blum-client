@@ -1,6 +1,8 @@
 import json
 import tkinter as tk
 from tkinter import ttk, messagebox
+
+import pyautogui
 from PIL import Image, ImageTk
 import mss
 import subprocess
@@ -77,7 +79,9 @@ class ConfigEditor(tk.Tk):
 
     def create_interact_widgets(self):
         self.interact_var = tk.BooleanVar(value=self.config["interact"])
+        self.auto_crop_var = tk.BooleanVar(value=self.config["autoCrop"])
         ttk.Checkbutton(self.interact_frame, text="Interact", variable=self.interact_var).pack(pady=10)
+        ttk.Checkbutton(self.interact_frame, text="Auto crop", variable=self.auto_crop_var).pack(pady=10)
 
     def create_detect_widgets(self):
         detect = self.config["detect"]
@@ -118,8 +122,15 @@ class ConfigEditor(tk.Tk):
         ttk.Label(self.detect_frame, text="Click Frequency:").pack()
         ttk.Entry(self.detect_frame, textvariable=self.click_frequency_var).pack(pady=2)
 
+    # def auto_crop(self):
+    #     blum_window = pyautogui.getWindowsWithTitle("TelegramDesktop")[0]
+    #     self.update_screenshot()
+
     def create_window_widgets(self):
         window = self.config["window"]
+
+        # auto_button = ttk.Button(self.window_frame, text="Auto", command=self.auto_crop)
+        # auto_button.pack(side='top', padx=10)
 
         self.left_var = tk.IntVar(value=window["left"])
         self.top_var = tk.IntVar(value=window["top"])
@@ -198,6 +209,7 @@ class ConfigEditor(tk.Tk):
 
     def save_config(self):
         self.config["interact"] = self.interact_var.get()
+        self.config["autoCrop"] = self.auto_crop_var.get()
 
         detect = self.config["detect"]
         for key in detect["hsv"]:

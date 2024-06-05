@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-img = cv2.imread("objects/full_field.png")
+img = cv2.imread("objects/menu.png")
 
 def nothing(x):
     pass
