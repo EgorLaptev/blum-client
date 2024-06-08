@@ -1,5 +1,6 @@
 import threading
 
+
 class AutoRemoveList:
     def __init__(self, delay=1):
         self.delay = delay

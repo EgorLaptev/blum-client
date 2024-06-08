@@ -43,7 +43,9 @@
     "minimal_area": 100,
     "frame_frequency": 0,
     "click_frequency": 0,
-    "click_offset": 0
+    "click_offset": 0,
+    "banned_space": 150,
+    "banned_time": 1
   },
   "window": {
     "left": 0,

@@ -15,7 +15,8 @@ with open('config.json', 'r') as config_file:
 pyautogui.PAUSE = config['detect']['click_frequency']
 pause = False
 
-banned_space = AutoRemoveList()
+banned_space = AutoRemoveList(delay=config['detect']['banned_time'])
+
 
 def is_far_enough(centers, new_center, min_distance=40):
     for center in centers:
@@ -47,20 +48,19 @@ def mask(centers, hsv, type_p='blum', left=0, top=0):
 
             center = (cX, cY)
 
-            if type_p=='replay' and contour_size > 2000:
+            if type_p == 'replay' and contour_size > 2000:
                 centers[type_p].append(center)
                 click(center, left, top)
                 continue
 
-
-            if is_far_enough(centers['bomb'], center, config['detect']['safe_distance']) and is_far_enough(banned_space.get(), center, 100):
+            if is_far_enough(centers['bomb'], center, config['detect']['safe_distance']) and is_far_enough(banned_space.get(), center, config['detect']['banned_space']):
                 if config['interact'] and type_p == 'blum':
                     click(center, left, top)
                 centers[type_p].append(center)
 
             if type_p == 'bomb':
                 centers['blum'] = [center for center in centers['blum'] if
-                                  is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
+                                   is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
                 centers['ice'] = [center for center in centers['ice'] if
                                   is_far_enough(centers['bomb'], center, config['detect']['safe_distance'])]
                 if contour_size > 1000:
@@ -100,11 +100,10 @@ def autocrop():
 
     blum_window = tg_windows[0]
 
-    return (blum_window.left, blum_window.top+200, blum_window.width, blum_window.height)
+    return (blum_window.left, blum_window.top + 200, blum_window.width, blum_window.height)
 
 
 def loop():
-
     left, top, width, height = autocrop() if config['autoCrop'] else tuple(config['window'].values())
 
     screenshot = pyautogui.screenshot(region=(left, top, width, height))
@@ -153,13 +152,18 @@ while True:
 
     cv2.waitKey(1) & 0xFF
 
+    # pause script
     if keyboard.is_pressed('p'):
         print("PAUSE")
         pause = not pause
         time.sleep(0.5)
+
+    # stop script
     if keyboard.is_pressed('q'):
         cv2.destroyAllWindows()
         break
+
+    # restart script
     if keyboard.is_pressed('r'):
         cv2.destroyAllWindows()
         os.execv(sys.executable, ['python'] + sys.argv)
